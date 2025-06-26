@@ -61,8 +61,14 @@ dependencies {
     implementation(libs.room)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
+    //lottie
+    implementation(libs.lottie.animation)
 
+    //Unit testing
     testImplementation(libs.junit)
+    testImplementation(libs.coroutine.test)
+    testImplementation(libs.mockito)
+    testImplementation(libs.mockito.kotlin)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

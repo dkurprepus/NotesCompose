@@ -9,6 +9,9 @@ import androidx.lifecycle.viewModelScope
 import com.sadxlab.notescompose.domain.model.Note
 import com.sadxlab.notescompose.domain.usecases.NoteUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,15 +19,21 @@ import javax.inject.Inject
 class NoteViewModel @Inject constructor(
     private val useCases: NoteUseCases
 ) : ViewModel() {
-    private val _notes = mutableStateOf<List<Note>>(emptyList())
-    val notes: State<List<Note>> = _notes
+    private val _notes = MutableStateFlow<List<Note>>(emptyList())
+    val notes: StateFlow<List<Note>> = _notes.asStateFlow()
 
-    var editingNote by mutableStateOf<Note?>(null)
-        private set
+    private val _editingNote = MutableStateFlow<Note?>(null)
+    val editingNote: StateFlow<Note?> = _editingNote.asStateFlow()
+
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading = _isLoading.asStateFlow()
 
     fun loadNotes() {
         viewModelScope.launch {
-            _notes.value = useCases.getAllNotes()
+            useCases.getAllNotes().collect {
+                _notes.value = it
+                _isLoading.value=false
+            }
         }
     }
 
@@ -55,7 +64,7 @@ class NoteViewModel @Inject constructor(
 
     fun loadNoteById(id: Int) {
         viewModelScope.launch {
-            editingNote = useCases.getNoteById(id)
+            _editingNote.value = useCases.getNoteById(id)
         }
     }
 }

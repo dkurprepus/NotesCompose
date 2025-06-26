@@ -13,11 +13,18 @@ ksp = "2.0.21-1.0.27"
 hilt_navigation = "1.1.0"
 navigationCompose = "2.9.0"
 room = "2.6.1"
+lottie = "6.1.0"
+kotlin_test = "1.8.0"
+mockito = "5.2.0"
+mockito_kotlin = "4.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+coroutine-test={group="org.jetbrains.kotlinx",name="kotlinx-coroutines-test",version.ref="kotlin_test"}
+mockito={group="org.mockito",name="mockito-core",version.ref="mockito"}
+mockito-kotlin={group="org.mockito.kotlin",name="mockito-kotlin",version.ref="mockito_kotlin"}
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
@@ -36,6 +43,7 @@ dagger-hilt-compose={group="androidx.hilt",name="hilt-navigation-compose",versio
 room={group="androidx.room",name="room-runtime",version.ref="room"}
 room-ktx={group="androidx.room",name="room-ktx",version.ref="room"}
 room-compiler={group="androidx.room",name="room-compiler",version.ref="room"}
+lottie-animation={group="com.airbnb.android",name="lottie-compose",version.ref="lottie"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

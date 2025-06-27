@@ -89,8 +89,7 @@ fun NoteScreen(
                 }
                 else->{
                     LazyVerticalGrid(
-                        columns = GridCells.Adaptive(minSize = 150.dp),
-                        modifier = Modifier.fillMaxSize(),
+                        columns = GridCells.Fixed(2),
                         contentPadding = PaddingValues(8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)

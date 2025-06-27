@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.sadxlab.notescompose.domain.model.Note
 
@@ -28,19 +29,32 @@ fun NoteItem(note: Note, onDelete: (Note) -> Unit, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 100.dp)
+            .padding(8.dp)
+            .heightIn(min = 140.dp, max = 180.dp)
             .combinedClickable(
                 onClick = onClick,
                 onLongClick = { onDelete(note) }
             ),
-        elevation = CardDefaults.cardElevation(6.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(note.color))
-    ) {
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(note.color)),
+        elevation = CardDefaults.cardElevation(4.dp),
+
+
+        ) {
         Column(modifier = Modifier.padding(12.dp)) {
-            Text(note.title, style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(note.content, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                note.title,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                note.content,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 4,
+                overflow = TextOverflow.Ellipsis
+            )
         }
 
     }

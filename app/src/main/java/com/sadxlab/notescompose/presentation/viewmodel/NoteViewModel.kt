@@ -58,9 +58,6 @@ class NoteViewModel @Inject constructor(
         }
     }
 
-    fun getNoteById(noteId: Int): Note? {
-        return notes.value.find { it.id == noteId }
-    }
 
     fun loadNoteById(id: Int) {
         viewModelScope.launch {

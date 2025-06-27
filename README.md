@@ -59,6 +59,31 @@ This project uses **JUnit4**, **Mockito**, and **Kotlin Coroutines Test** for Vi
 | `loadNotes()`    | Loads all notes into state           |
 | `loadNoteById()` | Loads a single note into `editingNote` |
 
+
 ### 📁 Test File
 
-- Location:
+- Location: `com.sadxlab.notescompose.presentation.viewmodel.NoteViewModelTest`
+
+### 🔧 Tools Used
+
+- `kotlinx.coroutines.test` – Coroutine testing utilities
+- `Mockito / Mockito-Kotlin` – For mocking repository behavior
+- `JUnit4` – Test framework
+
+### 🧪 Sample Test Case
+
+```kotlin
+@Test
+fun `update Note should call addNote and load updated notes`() = runTest {
+    val updatedNote = Note(id = 1, title = "Updated", content = "Updated content")
+
+    whenever(repository.addNote(updatedNote)).thenReturn(Unit)
+    whenever(repository.getNotes()).thenReturn(flowOf(listOf(updatedNote)))
+
+    viewModel.updateNote(updatedNote)
+    advanceUntilIdle()
+
+    verify(repository).addNote(updatedNote)
+    val result = viewModel.notes.first()
+    assertEquals(listOf(updatedNote), result)
+}

@@ -10,7 +10,6 @@ An offline-first notes application built using **Jetpack Compose**, **MVVM**, **
 - 🎨 Choose custom soft background colors for each note
 - 🧱 Modern UI built entirely with **Jetpack Compose**
 - 🗂 Notes displayed in a responsive **grid layout**
-- 🔄 **Undo support** via Snackbar when deleting notes
 - ❗ **Confirmation dialog** before deleting notes
 - 📄 **Edit screen** with pre-filled content and delete option
 - ✅ Offline support using Room database
@@ -22,16 +21,15 @@ An offline-first notes application built using **Jetpack Compose**, **MVVM**, **
 
 The app follows **Clean Architecture**:
 
-UI (Compose)
-↓
-ViewModel (MVVM)
-↓
-Use Cases (Domain Layer)
-↓
-Repository Interface
-↓
+UI (Compose)  
+↓  
+ViewModel (MVVM)  
+↓  
+Use Cases (Domain Layer)  
+↓  
+Repository Interface  
+↓  
 Repository Implementation (Room DB)
-
 
 ---
 
@@ -46,12 +44,21 @@ Repository Implementation (Room DB)
 - **State Management** with `remember`, `mutableStateOf`, and `viewModel`
 
 ---
-## 🗓 Upcoming Enhancements
 
-- 📭 Show **empty state screen** if there are no notes
-- 🔍 Add **search bar** to filter notes by title/content
-- 🔐 Optional **biometric/PIN lock**
-- ☁️ Firebase sync for backup (optional)
-- 🧪 Add unit/UI tests
+## 🧪 Unit Testing
 
-Let me know when you're ready to push — or want to make it a multi-module project later 🔥
+This project uses **JUnit4**, **Mockito**, and **Kotlin Coroutines Test** for ViewModel testing.
+
+### ✅ ViewModel Test Coverage
+
+| Function         | Description                          |
+|------------------|--------------------------------------|
+| `addNote()`      | Adds a new note and refreshes list   |
+| `updateNote()`   | Updates an existing note (via add)   |
+| `deleteNote()`   | Deletes a note and reloads notes     |
+| `loadNotes()`    | Loads all notes into state           |
+| `loadNoteById()` | Loads a single note into `editingNote` |
+
+### 📁 Test File
+
+- Location:

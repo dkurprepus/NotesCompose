@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
@@ -38,11 +40,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -62,7 +69,8 @@ fun EditNoteScreen(
 
     val note by viewModel.editingNote.collectAsState()
 
-
+    val contentFocusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
 
     when (val noteValue = note) {
         null -> {
@@ -139,35 +147,54 @@ fun EditNoteScreen(
                         value = title,
                         onValueChange = { title = it },
                         label = { Text("Title") },
-                        modifier = Modifier.fillMaxWidth()
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                        keyboardActions = KeyboardActions(onNext = { contentFocusRequester.requestFocus() }),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(contentFocusRequester)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     OutlinedTextField(
                         value = content,
                         onValueChange = { content = it },
                         label = { Text("Content") },
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp)
+                            .focusRequester(contentFocusRequester)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text("Select Note Color", style = MaterialTheme.typography.labelLarge)
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+
                         noteColors.forEach { color ->
+
+
                             Box(
                                 modifier = Modifier
                                     .size(40.dp)
                                     .clip(CircleShape)
                                     .background(color)
                                     .border(
-                                        width = if (selectedColor == color.toArgb()) 3.dp else 1.dp,
+                                        width = if (selectedColor == color.toArgb()) 2.dp else 1.dp,
                                         color = if (selectedColor == color.toArgb()) Color.Black else Color.Gray,
                                         shape = CircleShape,
                                     )
                                     .clickable {
                                         selectedColor = color.toArgb()
                                     }
-                            ) { }
+                            ) {
+                                if (selectedColor == color.toArgb()) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = "Selected Color",
+                                        tint = Color.Black,
+                                        modifier = Modifier.align(alignment = Alignment.Center)
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -192,7 +219,7 @@ fun EditNoteScreen(
                     dismissButton = {
                         TextButton(
                             onClick = {
-                               showDeleteDialog=false
+                                showDeleteDialog = false
                             }
                         ) {
                             Text("Cancel")

@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,11 +31,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -60,6 +67,8 @@ fun AddNoteScreen(
         Color(0xFFFFE0B2), // Light Orange
         Color(0xFFF8BBD0)  // Light Pink
     )
+    val contentFocusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("Add note") })
@@ -84,7 +93,13 @@ fun AddNoteScreen(
                     }
 
                     else -> {
-                        viewModel.addNote(Note(title = title, content = content, color = selectedColor))
+                        viewModel.addNote(
+                            Note(
+                                title = title,
+                                content = content,
+                                color = selectedColor
+                            )
+                        )
                         navController.popBackStack()
                     }
                 }
@@ -104,7 +119,11 @@ fun AddNoteScreen(
                 value = title,
                 onValueChange = { title = it },
                 label = { Text("Title") },
-                modifier = Modifier.fillMaxWidth()
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { contentFocusRequester.requestFocus() }),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(contentFocusRequester)
 
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -112,12 +131,15 @@ fun AddNoteScreen(
                 value = content,
                 onValueChange = { content = it },
                 label = { Text("Content") },
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
+                    .focusRequester(contentFocusRequester)
 
             )
-            Spacer(modifier = Modifier.height( 15.dp))
+            Spacer(modifier = Modifier.height(15.dp))
             Text("Select Note Color", style = MaterialTheme.typography.labelLarge)
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -131,12 +153,21 @@ fun AddNoteScreen(
                             .clip(CircleShape)
                             .background(color)
                             .border(
-                                width = if (color.toArgb() == selectedColor) 3.dp else 1.dp,
+                                width = if (color.toArgb() == selectedColor) 2.dp else 1.dp,
                                 color = if (color.toArgb() == selectedColor) Color.Black else Color.Gray,
                                 shape = CircleShape
                             )
                             .clickable { selectedColor = color.toArgb() }
-                    )
+                    ){       if (selectedColor == color.toArgb()) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Selected Color",
+                            tint = Color.Black,
+                            modifier = Modifier.align(alignment = Alignment.Center)
+                        )
+                    }
+
+                    }
                 }
             }
         }

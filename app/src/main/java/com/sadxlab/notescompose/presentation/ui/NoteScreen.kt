@@ -1,5 +1,7 @@
 package com.sadxlab.notescompose.presentation.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,13 +15,17 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -73,7 +79,46 @@ fun NoteScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }, topBar = {
-            TopAppBar(title = { Text("Only Notes!") })
+            TopAppBar(
+                title = { Text("Only Notes!") },
+                actions = {
+                    var expanded by remember { mutableStateOf(false) }
+                    IconButton(onClick = { expanded = true })
+                    {
+                        Icon(Icons.Default.MoreVert, contentDescription = "More Options")
+                    }
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        DropdownMenuItem(
+                            text = { Text("Privacy Policy") },
+                            onClick = {
+                                expanded = false
+                                val intent = Intent(Intent.ACTION_VIEW).apply {
+                                    data =
+                                        Uri.parse("https://sadxproductionlab.blogspot.com/2025/06/only-notes-fast-clean-notes.html")
+                                }
+                                context.startActivity(intent)
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Rate us") },
+                            onClick = {
+                                expanded = false
+                                val uri = Uri.parse("market://details?id=${context.packageName}")
+                                val goToMarket = Intent(Intent.ACTION_VIEW, uri).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_NEW_DOCUMENT or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+                                }
+                                try {
+                                    context.startActivity(goToMarket)
+                                } catch (e: Exception) {
+                                    val webUrl =
+                                        Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}")
+                                    context.startActivity(Intent(Intent.ACTION_VIEW, webUrl))
+                                }
+                            }
+                        )
+                    }
+                }
+            )
         }, floatingActionButton = {
             FloatingActionButton(onClick = {
                 navController.navigate("addNote")

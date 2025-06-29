@@ -1,5 +1,6 @@
 package com.sadxlab.notescompose.presentation.ui
 
+import android.R
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -55,6 +56,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.sadxlab.notescompose.domain.model.Note
 import com.sadxlab.notescompose.presentation.viewmodel.NoteViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -129,7 +133,8 @@ fun EditNoteScreen(
                                 id = noteId,
                                 title = title,
                                 content = content,
-                                color = selectedColor
+                                color = selectedColor,
+                                timestamp = System.currentTimeMillis()
                             )
                         )
                         navController.popBackStack()
@@ -197,6 +202,22 @@ fun EditNoteScreen(
                             }
                         }
                     }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    val formattedDate = remember(noteValue.timestamp) {
+                        SimpleDateFormat("MMM dd, yyyy - HH:mm", Locale.getDefault()).format(
+                            Date(
+                                noteValue.timestamp
+                            )
+                        )
+                    }
+                    Text(
+                        text = "Last edited: $formattedDate",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.Gray,
+                        modifier = Modifier.align(Alignment.End)
+                    )
+
+
                 }
             }
             if (showDeleteDialog) {

@@ -12,5 +12,5 @@ data class NoteEntity(
     val title: String,
     val content: String,
     val color: Int = Color(0xFFFFF59D).toArgb(),
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long
 )

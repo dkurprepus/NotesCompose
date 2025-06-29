@@ -44,6 +44,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.sadxlab.notescompose.core.utils.milliSecondsToTime
 import kotlinx.coroutines.launch
@@ -55,6 +56,11 @@ fun NoteScreen(
     navController: NavController,
     viewModel: NoteViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel.insertPrefilledNotesIfFirstTime(context)
+        viewModel.loadNotes()
+    }
     val notes by viewModel.notes.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val scope = rememberCoroutineScope()
@@ -62,10 +68,12 @@ fun NoteScreen(
 
     var noteToDelete by remember { mutableStateOf<Note?>(null) }
 
+
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }, topBar = {
-            TopAppBar(title = { Text("Notes") })
+            TopAppBar(title = { Text("Only Notes!") })
         }, floatingActionButton = {
             FloatingActionButton(onClick = {
                 navController.navigate("addNote")
@@ -81,13 +89,13 @@ fun NoteScreen(
                         LinearProgressIndicator()
                     }
 
-                notes.isEmpty()->
-                {
+                notes.isEmpty() -> {
                     EmptyNotesAnimation(
                         { navController.navigate("addNote") }
                     )
                 }
-                else->{
+
+                else -> {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
                         contentPadding = PaddingValues(8.dp),

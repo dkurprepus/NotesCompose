@@ -1,6 +1,6 @@
 package com.sadxlab.notescompose.presentation.ui
 
-import android.R
+
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,6 +27,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -55,7 +56,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.sadxlab.notescompose.domain.model.Note
+import com.sadxlab.notescompose.presentation.UiEvent
+import com.sadxlab.notescompose.presentation.debouncedClick
 import com.sadxlab.notescompose.presentation.viewmodel.NoteViewModel
+import com.sadxlab.notescompose.ui.theme.NoteColorPalette
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -67,13 +71,31 @@ fun EditNoteScreen(
     noteId: Int,
     viewModel: NoteViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+    var isSaving by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         viewModel.loadNoteById(noteId)
     }
+    LaunchedEffect(Unit) {
+        viewModel.eventFlow.collect { event ->
+            isSaving = false
 
+            when (event) {
+                is UiEvent.SaveSuccess -> {
+                    navController.popBackStack()
+                }
+
+                is UiEvent.ShowToast -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
     val note by viewModel.editingNote.collectAsState()
 
     val contentFocusRequester = remember { FocusRequester() }
+    val titleFocusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
     when (val noteValue = note) {
@@ -94,17 +116,8 @@ fun EditNoteScreen(
             // rest of UI
             var showDeleteDialog by remember { mutableStateOf(false) }
 
-            val context = LocalContext.current
 
-            val noteColors = listOf(
-                Color(0xFFFFF59D), // Light Yellow
-                Color(0xFFB2EBF2), // Light Cyan
-                Color(0xFFC8E6C9), // Light Green
-                Color(0xFFFFCDD2), // Light Red/Pink
-                Color(0xFFD1C4E9), // Lavender
-                Color(0xFFFFE0B2), // Light Orange
-                Color(0xFFF8BBD0)  // Light Pink
-            )
+            val  noteColors = NoteColorPalette
 
             Scaffold(
                 topBar = {
@@ -120,6 +133,8 @@ fun EditNoteScreen(
                     })
                 }, floatingActionButton = {
                     FloatingActionButton(onClick = {
+
+
                         if (title.isBlank() || content.isBlank()) {
                             Toast.makeText(
                                 context,
@@ -128,18 +143,43 @@ fun EditNoteScreen(
                             ).show()
                             return@FloatingActionButton
                         }
-                        viewModel.updateNote(
-                            Note(
-                                id = noteId,
-                                title = title,
-                                content = content,
-                                color = selectedColor,
-                                timestamp = System.currentTimeMillis()
+
+
+                        val isTitleChanged = title != noteValue.title
+                        val isContentChanged = content != noteValue.content
+                        val isColorChanged = selectedColor != noteValue.color
+
+
+
+                        debouncedClick {
+                            if (!isTitleChanged && !isContentChanged && !isColorChanged) {
+                                isSaving = false
+                                Toast.makeText(context, "No changes made", Toast.LENGTH_SHORT).show()
+                                navController.popBackStack()
+                            }
+                            isSaving = true
+                            viewModel.updateNote(
+                                Note(
+                                    id = noteId,
+                                    title = title,
+                                    content = content,
+                                    color = selectedColor,
+                                    timestamp = System.currentTimeMillis()
+                                )
                             )
-                        )
-                        navController.popBackStack()
+                        }
+
                     }) {
-                        Icon(Icons.Default.Check, contentDescription = "Save")
+
+                        if (isSaving) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = Color.White,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Icon(Icons.Default.Check, contentDescription = "Save")
+                        }
                     }
                 }
             ) { padding ->
@@ -154,16 +194,17 @@ fun EditNoteScreen(
                         label = { Text("Title") },
                         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                         keyboardActions = KeyboardActions(onNext = { contentFocusRequester.requestFocus() }),
+                        singleLine = true,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .focusRequester(contentFocusRequester)
+                            .focusRequester(titleFocusRequester)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     OutlinedTextField(
                         value = content,
                         onValueChange = { content = it },
                         label = { Text("Content") },
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default),
                         keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                         modifier = Modifier
                             .fillMaxWidth()

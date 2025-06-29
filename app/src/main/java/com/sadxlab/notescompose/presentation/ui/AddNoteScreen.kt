@@ -18,6 +18,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -27,12 +28,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -45,7 +49,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.sadxlab.notescompose.domain.model.Note
+import com.sadxlab.notescompose.presentation.UiEvent
+import com.sadxlab.notescompose.presentation.debouncedClick
 import com.sadxlab.notescompose.presentation.viewmodel.NoteViewModel
+import com.sadxlab.notescompose.ui.theme.NoteColorPalette
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,57 +65,82 @@ fun AddNoteScreen(
     var content by remember { mutableStateOf("") }
     val context = LocalContext.current
     var selectedColor by remember { mutableStateOf(Color(0xFFFFF59D).toArgb()) }
-    val notesColor = listOf(
-        Color(0xFFFFF59D), // Light Yellow
-        Color(0xFFB2EBF2), // Light Cyan
-        Color(0xFFC8E6C9), // Light Green
-        Color(0xFFFFCDD2), // Light Red/Pink
-        Color(0xFFD1C4E9), // Lavender
-        Color(0xFFFFE0B2), // Light Orange
-        Color(0xFFF8BBD0)  // Light Pink
-    )
+    val notesColor = NoteColorPalette
     val contentFocusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    val clickLocked = remember { mutableStateOf(false) }
+    var lastAddTime = 0L
+    val debounceInterval = 1000L
+    var isSaving by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                is UiEvent.SaveSuccess -> {
+                    isSaving = false
+                    clickLocked.value = false
+                    navController.popBackStack()
+                }
+
+                is UiEvent.ShowToast -> {
+                    isSaving = false
+                    clickLocked.value = false
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("Add note") })
-        }, floatingActionButton = {
+        },
+        floatingActionButton = {
             FloatingActionButton(onClick = {
 
-                when {
-                    title.isBlank() && content.isBlank() -> {
-                        Toast.makeText(
-                            context,
-                            "Please add note title and content",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    title.isBlank() -> {
-                        Toast.makeText(context, "Please add note title", Toast.LENGTH_SHORT).show()
-                    }
-
-                    content.isBlank() -> {
-                        Toast.makeText(context, "Please add content", Toast.LENGTH_SHORT).show()
-                    }
-
-                    else -> {
-                        viewModel.addNote(
-                            Note(
-                                title = title,
-                                content = content,
-                                color = selectedColor
-                            )
+                if (title.isBlank() && content.isBlank()) {
+                    Toast.makeText(
+                        context,
+                        "Please add note title and content",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@FloatingActionButton
+                }
+                if (title.isBlank()) {
+                    Toast.makeText(
+                        context,
+                        "Please add note title and content",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@FloatingActionButton
+                }
+                if (content.isBlank()) {
+                    Toast.makeText(context, "Please add content", Toast.LENGTH_SHORT).show()
+                    return@FloatingActionButton
+                }
+                debouncedClick {
+                    isSaving = true
+                    viewModel.addNote(
+                        Note(
+                            title = title,
+                            content = content,
+                            color = selectedColor,
+                            timestamp = System.currentTimeMillis()
                         )
-                        navController.popBackStack()
-                    }
+                    )
+                }
+            }
+            ) {
+                if (isSaving) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(Icons.Default.Check, contentDescription = "Save")
                 }
 
-
-            }) {
-                Icon(Icons.Default.Check, contentDescription = "Save")
             }
-        }
+        },
     ) { padding ->
         Column(
             modifier = Modifier
@@ -121,6 +153,7 @@ fun AddNoteScreen(
                 label = { Text("Title") },
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
                 keyboardActions = KeyboardActions(onNext = { contentFocusRequester.requestFocus() }),
+                singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(contentFocusRequester)
@@ -131,7 +164,7 @@ fun AddNoteScreen(
                 value = content,
                 onValueChange = { content = it },
                 label = { Text("Content") },
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default),
                 keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -158,14 +191,15 @@ fun AddNoteScreen(
                                 shape = CircleShape
                             )
                             .clickable { selectedColor = color.toArgb() }
-                    ){       if (selectedColor == color.toArgb()) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = "Selected Color",
-                            tint = Color.Black,
-                            modifier = Modifier.align(alignment = Alignment.Center)
-                        )
-                    }
+                    ) {
+                        if (selectedColor == color.toArgb()) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "Selected Color",
+                                tint = Color.Black,
+                                modifier = Modifier.align(alignment = Alignment.Center)
+                            )
+                        }
 
                     }
                 }

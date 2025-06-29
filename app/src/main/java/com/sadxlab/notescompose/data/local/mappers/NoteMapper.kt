@@ -6,13 +6,13 @@ import com.sadxlab.notescompose.domain.model.Note
 // Converts NoteEntity (Room) to Note (Domain)
 fun NoteEntity.toNote(): Note {
     return Note(
-        id = id, title = title, content = content, color = color
+        id = id, title = title, content = content, color = color,timestamp=timestamp
     )
 }
 
 // Converts Note (Domain) to NoteEntity (Room)
 fun Note.toEntity(): NoteEntity {
     return NoteEntity(
-        id = id, title = title, content = content, color = color
+        id = id, title = title, content = content, color = color, timestamp = timestamp
     )
 }

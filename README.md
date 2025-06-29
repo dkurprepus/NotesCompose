@@ -1,20 +1,20 @@
-# 📝 Offline Notes App
+# 📝 Only Notes – Fast, Clean & Offline Note Taking App
 
-An offline-first notes application built using **Jetpack Compose**, **MVVM**, **Clean Architecture**, **Room**, and **Hilt**.
+Only Notes is a **modern Jetpack Compose Android app** for creating and managing notes, completely offline. Designed with minimal UI and smooth performance, it follows **MVVM + Clean Architecture** and uses **Room** for local persistence.
+
 
 ---
 
 ## 🚀 Features
 
-- ➕ Add, 📝 Edit, and 🗑 Delete notes
-- 🎨 Choose custom soft background colors for each note
-- 🧱 Modern UI built entirely with **Jetpack Compose**
-- 🗂 Notes displayed in a responsive **grid layout**
-- ❗ **Confirmation dialog** before deleting notes
-- 📄 **Edit screen** with pre-filled content and delete option
-- ✅ Offline support using Room database
-- 🧠 Architecture: MVVM + Clean + Hilt
-
+- ➕ Add, 📝 Edit, and 🗑 Delete notes easily
+- 🎨 Choose from multiple soft background colors
+- 📱 Fully responsive grid layout with Compose
+- 🧠 Offline-first using **Room database**
+- ❗ Confirmation dialog before delete
+- ✏️ Edit screen with pre-filled data and delete button
+- ⚙️ Built on **MVVM + Clean Architecture**
+- 🔒 No internet or account required — **100% private**
 ---
 
 ## 🧱 Architecture
@@ -60,7 +60,7 @@ This project uses **JUnit4**, **Mockito**, and **Kotlin Coroutines Test** for Vi
 | `loadNoteById()` | Loads a single note into `editingNote` |
 
 
-### 📁 Test File
+### 📁 Test Location
 
 - Location: `com.sadxlab.notescompose.presentation.viewmodel.NoteViewModelTest`
 
@@ -87,3 +87,30 @@ fun `update Note should call addNote and load updated notes`() = runTest {
     val result = viewModel.notes.first()
     assertEquals(listOf(updatedNote), result)
 }
+```
+
+### 📸 Screenshots
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/1b7431b5-8200-4065-a3ea-43b2f024fd45" width="200"/>
+  <img src="https://github.com/user-attachments/assets/8a073ac9-3e78-4d73-99ca-80b1fcf55d84" width="200"/>
+  <img src="https://github.com/user-attachments/assets/a599a0e1-7354-4f6f-913d-57d681fee10b" width="200"/>
+  <img src="https://github.com/user-attachments/assets/e6c6071d-f38a-4924-9f8a-62890b82bc52" width="200"/>
+</p>
+
+
+
+### 🔐 Privacy
+Only Notes does not collect or share any personal data.
+Privacy Policy: [Read here](https://sadxproductionlab.blogspot.com/2025/06/only-notes-fast-clean-notes.html)
+
+### 📲 Play Store
+Rate & support us on the Google Play Store ⭐
+
+<a href="https://play.google.com/store/apps/details?id=com.sadxlab.notescompose" target="_blank">
+  <img src="https://github.com/user-attachments/assets/5f117bc4-8643-49df-87b8-1c5ef0812ae4" alt="Download on Play Store" width="150">
+</a>
+
+
+### 👨‍💻 Author
+Developed by [Darshan Khatri](https://github.com/dkurprepus)
+

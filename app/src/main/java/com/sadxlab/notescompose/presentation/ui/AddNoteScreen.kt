@@ -182,7 +182,7 @@ fun AddNoteScreen(
                 notesColor.forEach { color ->
                     Box(
                         modifier = Modifier
-                            .size(40.dp)
+                            .size(33.dp)
                             .clip(CircleShape)
                             .background(color)
                             .border(

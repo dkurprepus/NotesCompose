@@ -7,7 +7,7 @@ import com.sadxlab.notescompose.data.local.NoteDao
 import com.sadxlab.notescompose.data.local.NoteDataBase
 import com.sadxlab.notescompose.data.repository.NoteRepositoryImpl
 import com.sadxlab.notescompose.domain.repository.NoteRepository
-import com.sadxlab.notescompose.domain.usecases.AddNote
+import com.sadxlab.notescompose.domain.usecases.AddNoteUseCase
 import com.sadxlab.notescompose.domain.usecases.DeleteNote
 import com.sadxlab.notescompose.domain.usecases.GetAllNotes
 import com.sadxlab.notescompose.domain.usecases.GetNoteById
@@ -43,7 +43,7 @@ object AppModule {
     @Singleton
     fun provideUseCases(repository: NoteRepository): NoteUseCases {
         return NoteUseCases(
-            addNote = AddNote(repository),
+            addNoteUseCase = AddNoteUseCase(repository),
             getAllNotes = GetAllNotes(repository),
             deleteNote = DeleteNote(repository),
             getNoteById = GetNoteById(repository)

@@ -1,10 +1,8 @@
 package com.sadxlab.notescompose.presentation.viewmodel
 
-import com.sadxlab.notescompose.data.local.mappers.toEntity
-import com.sadxlab.notescompose.data.local.mappers.toNote
 import com.sadxlab.notescompose.domain.model.Note
 import com.sadxlab.notescompose.domain.repository.NoteRepository
-import com.sadxlab.notescompose.domain.usecases.AddNote
+import com.sadxlab.notescompose.domain.usecases.AddNoteUseCase
 import com.sadxlab.notescompose.domain.usecases.DeleteNote
 import com.sadxlab.notescompose.domain.usecases.GetAllNotes
 import com.sadxlab.notescompose.domain.usecases.GetNoteById
@@ -14,7 +12,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -25,7 +22,6 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.mockito.Mockito.doNothing
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -45,7 +41,7 @@ class NoteViewModelTest {
         repository = mock()
 
         useCases = NoteUseCases(
-            addNote = AddNote(repository),
+            addNoteUseCase = AddNoteUseCase(repository),
             getAllNotes = GetAllNotes(repository),
             deleteNote = DeleteNote(repository),
             getNoteById = GetNoteById(repository),
@@ -57,8 +53,8 @@ class NoteViewModelTest {
     @Test
     fun `loadNotes should emit all expected notes`() = runTest {
         val noteList = listOf(
-            Note(1, "Test Title", "Test Content", 0xFFFFFF),
-            Note(2, "Another Title", "More Content", 0xFFFFFF)
+            Note(1, "Test Title", "Test Content", 0xFFFFFF, System.currentTimeMillis()),
+            Note(2, "Another Title", "More Content", 0xFFFFFF,System.currentTimeMillis())
         )
 
         `when`(repository.getNotes()).thenReturn(flowOf(noteList))
@@ -78,7 +74,7 @@ class NoteViewModelTest {
     @Test
     fun `fetch single note By Id`() = runTest {
 
-        val testNote = Note(id = 1, title = "Test note", content = "Test content", color = 0xFFFFFF)
+        val testNote = Note(id = 1, title = "Test note", content = "Test content", color = 0xFFFFFF,System.currentTimeMillis())
         // Mock the repository to return a Flow of that note
         `when`(repository.getNoteById(1)).thenReturn((testNote))
 
@@ -95,7 +91,7 @@ class NoteViewModelTest {
     @Test
     fun `delete note`() = runTest {
 
-        val testNote = Note(id = 1, title = "Test", content = "Content")
+        val testNote = Note(id = 1, title = "Test", content = "Content", timestamp = System.currentTimeMillis())
 
         // Mock getNotes() to prevent crash
         whenever(repository.getNotes()).thenReturn(flowOf(listOf(testNote)))
@@ -116,7 +112,7 @@ class NoteViewModelTest {
     @Test
     fun `add Note`() = runTest {
 
-        val testNote = Note(id = 1, title = "Title", content = "Content")
+        val testNote = Note(id = 1, title = "Title", content = "Content", timestamp = System.currentTimeMillis())
         whenever(repository.getNotes()).thenReturn(flowOf(listOf(testNote)))
         whenever(repository.addNote(testNote)).thenReturn(Unit)
 
@@ -131,7 +127,7 @@ class NoteViewModelTest {
     @Test
     fun `update Note`() = runTest {
 
-        val testNote = Note(id = 1, title = "Title", content = "Content")
+        val testNote = Note(id = 1, title = "Title", content = "Content", timestamp = System.currentTimeMillis())
         whenever(repository.getNotes()).thenReturn(flowOf(listOf(testNote)))
         whenever(repository.addNote(testNote)).thenReturn(Unit)
 

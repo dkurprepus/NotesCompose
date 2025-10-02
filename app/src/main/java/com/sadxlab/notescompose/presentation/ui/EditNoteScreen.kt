@@ -133,30 +133,27 @@ fun EditNoteScreen(
                     })
                 }, floatingActionButton = {
                     FloatingActionButton(onClick = {
-
-
-                        if (title.isBlank() || content.isBlank()) {
-                            Toast.makeText(
-                                context,
-                                "Title and content can not be empty",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@FloatingActionButton
-                        }
-
-
-                        val isTitleChanged = title != noteValue.title
-                        val isContentChanged = content != noteValue.content
-                        val isColorChanged = selectedColor != noteValue.color
-
-
-
                         debouncedClick {
+                            if (title.isBlank() || content.isBlank()) {
+                                Toast.makeText(
+                                    context,
+                                    "Title and content can not be empty",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@debouncedClick
+                            }
+
+                            val isTitleChanged = title != noteValue.title
+                            val isContentChanged = content != noteValue.content
+                            val isColorChanged = selectedColor != noteValue.color
+
                             if (!isTitleChanged && !isContentChanged && !isColorChanged) {
                                 isSaving = false
                                 Toast.makeText(context, "No changes made", Toast.LENGTH_SHORT).show()
                                 navController.popBackStack()
+                                return@debouncedClick
                             }
+
                             isSaving = true
                             viewModel.updateNote(
                                 Note(
@@ -168,7 +165,6 @@ fun EditNoteScreen(
                                 )
                             )
                         }
-
                     }) {
 
                         if (isSaving) {
@@ -220,7 +216,7 @@ fun EditNoteScreen(
 
                             Box(
                                 modifier = Modifier
-                                    .size(40.dp)
+                                    .size(33.dp)
                                     .clip(CircleShape)
                                     .background(color)
                                     .border(

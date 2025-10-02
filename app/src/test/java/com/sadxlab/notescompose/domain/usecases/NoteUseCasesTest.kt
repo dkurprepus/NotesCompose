@@ -22,7 +22,7 @@ class NoteUseCasesTest {
         useCases = NoteUseCases(
             getAllNotes = GetAllNotes(repository),
             getNoteById = GetNoteById(repository),
-            addNote = AddNote(repository),
+            addNoteUseCase = AddNoteUseCase(repository),
             deleteNote = DeleteNote(repository),
         )
 
@@ -31,8 +31,8 @@ class NoteUseCasesTest {
     @Test
     fun `addNote should call repository`() = runTest {
         val testNote =
-            Note(id = 1, title = "Test", content = "Hello Testing World", color = 0xFFFFFF)
-        useCases.addNote(testNote)
+            Note(id = 1, title = "Test", content = "Hello Testing World", color = 0xFFFFFF,System.currentTimeMillis())
+        useCases.addNoteUseCase(testNote)
 
         verify(repository).addNote(testNote)
     }
@@ -40,7 +40,7 @@ class NoteUseCasesTest {
     @Test
     fun `delete note should call repository`() = runTest {
         val testNote =
-            Note(id = 1, title = "Test", content = "Hello Testing World", color = 0xFFFFFF)
+            Note(id = 1, title = "Test", content = "Hello Testing World", color = 0xFFFFFF,System.currentTimeMillis())
 
         useCases.deleteNote(testNote)
 
@@ -50,7 +50,7 @@ class NoteUseCasesTest {
     @Test
     fun `getNote by id note should call repository`() = runTest {
         val testNote =
-            Note(id = 1, title = "Test", content = "Hello Testing World", color = 0xFFFFFF)
+            Note(id = 1, title = "Test", content = "Hello Testing World", color = 0xFFFFFF,System.currentTimeMillis())
 
         useCases.getNoteById(testNote.id)
 

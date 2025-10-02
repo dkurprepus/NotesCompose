@@ -2,10 +2,6 @@ package com.sadxlab.notescompose.presentation.viewmodel
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sadxlab.notescompose.data.local.mappers.toEntity
@@ -59,7 +55,7 @@ class NoteViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                useCases.addNote(note)
+                useCases.addNoteUseCase(note)
                 loadNotes()
                 _eventFlow.emit(UiEvent.SaveSuccess)
             } catch (e: Exception) {
@@ -74,12 +70,12 @@ class NoteViewModel @Inject constructor(
     fun updateNote(note: Note) {
         viewModelScope.launch {
             try {
-                useCases.addNote(note)
+                useCases.addNoteUseCase(note)
                 _eventFlow.emit(UiEvent.SaveSuccess)
             } catch (e: Exception) {
                 _eventFlow.emit(UiEvent.ShowToast("Failed to save note"))
             }
-            useCases.addNote(note)
+            useCases.addNoteUseCase(note)
             loadNotes()
         }
     }
@@ -152,7 +148,7 @@ class NoteViewModel @Inject constructor(
                 )
 
                 defaultNotes.forEach { note ->
-                    useCases.addNote(note)
+                    useCases.addNoteUseCase(note)
                 }
                 FirstLaunchManager.setFirstLaunchDone(context)
             }

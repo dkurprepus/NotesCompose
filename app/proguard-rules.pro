@@ -1,21 +1,25 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Keep line numbers in stack traces for easier debugging
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Room — keep entity classes and DAOs so Room's generated code can find them
+-keep class com.sadxlab.notescompose.data.local.** { *; }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Domain models — keep field names for serialisation/mapping
+-keep class com.sadxlab.notescompose.domain.model.** { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Hilt — generated components; Hilt ships its own rules but this is a safety net
+-keep class dagger.hilt.** { *; }
+-keep class javax.inject.** { *; }
+
+# Kotlin coroutines
+-keepclassmembernames class kotlinx.** {
+    volatile <fields>;
+}
+
+# Lottie
+-dontwarn com.airbnb.lottie.**
+-keep class com.airbnb.lottie.** { *; }
+
+# Google Play In-App Update
+-keep class com.google.android.play.core.** { *; }

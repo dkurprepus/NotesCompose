@@ -138,7 +138,9 @@ class NoteViewModel @Inject constructor(
 
     fun togglePin(note: Note) {
         viewModelScope.launch {
-            useCases.addNoteUseCase(note.copy(isPinned = !note.isPinned))
+            val toggled = note.copy(isPinned = !note.isPinned)
+            useCases.addNoteUseCase(toggled)
+            _editingNote.value = toggled
             loadNotes()
         }
     }

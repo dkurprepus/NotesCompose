@@ -12,5 +12,7 @@ data class NoteEntity(
     val title: String,
     val content: String,
     val color: Int = Color(0xFFFFF59D).toArgb(),
-    val timestamp: Long
+    val timestamp: Long,
+    val isPinned: Boolean = false,
+    val reminder: Long? = null
 )

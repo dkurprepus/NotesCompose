@@ -19,14 +19,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.airbnb.lottie.model.content.CircleShape
 
 @Composable
 fun EmptyNotesAnimation(onAddClick: () -> Unit) {
     val composition by rememberLottieComposition(LottieCompositionSpec.Asset("empty_notes.json"))
-    val progress by animateLottieCompositionAsState(composition)
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = LottieConstants.IterateForever
+    )
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -47,7 +50,7 @@ fun EmptyNotesAnimation(onAddClick: () -> Unit) {
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            text = "Tap tne button below to add your first note.",
+            text = "Tap the button below to add your first note.",
             style = MaterialTheme.typography.bodyMedium, color = Color.Gray
         )
         Spacer(modifier = Modifier.height(10.dp))

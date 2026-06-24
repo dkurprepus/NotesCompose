@@ -14,6 +14,7 @@ hilt_navigation = "1.1.0"
 navigationCompose = "2.9.0"
 room = "2.6.1"
 lottie = "6.1.0"
+play-update = "2.1.0"
 kotlin_test = "1.8.0"
 mockito = "5.2.0"
 mockito_kotlin = "4.0.0"
@@ -37,6 +38,7 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 dagger-hilt={group="com.google.dagger",name="hilt-android",version.ref="hilt"}
 dagger-hilt-compiler={group="com.google.dagger",name="hilt-compiler",version.ref="hilt"}
 dagger-hilt-compose={group="androidx.hilt",name="hilt-navigation-compose",version.ref="hilt_navigation"}
@@ -44,6 +46,7 @@ room={group="androidx.room",name="room-runtime",version.ref="room"}
 room-ktx={group="androidx.room",name="room-ktx",version.ref="room"}
 room-compiler={group="androidx.room",name="room-compiler",version.ref="room"}
 lottie-animation={group="com.airbnb.android",name="lottie-compose",version.ref="lottie"}
+play-app-update-ktx = { group = "com.google.android.play", name = "app-update-ktx", version.ref = "play-update" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

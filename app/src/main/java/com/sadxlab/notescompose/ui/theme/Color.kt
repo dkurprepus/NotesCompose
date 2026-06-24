@@ -18,5 +18,12 @@ val NoteColorPalette = listOf(
     Color(0xFFFFCDD2), // Light Red/Pink
     Color(0xFFD1C4E9), // Lavender
     Color(0xFFFFE0B2), // Light Orange
-    Color(0xFFF8BBD0)  // Light Pink
+    Color(0xFFF8BBD0), // Light Pink
+    Color(0xFFB3E5FC), // Sky Blue
+    Color(0xFFDCEDC8), // Lime Green
+    Color(0xFFFFE082), // Amber
+    Color(0xFFBCAAA4), // Warm Brown
+    Color(0xFFCFD8DC), // Blue Grey
+    Color(0xFFE1BEE7), // Light Purple
+    Color(0xFFFFCCBC), // Deep Orange Light
 )

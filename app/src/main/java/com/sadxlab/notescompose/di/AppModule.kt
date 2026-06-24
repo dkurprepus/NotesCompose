@@ -3,6 +3,8 @@ package com.sadxlab.notescompose.di
 import android.app.Application
 import androidx.room.Room
 import com.sadxlab.notescompose.data.local.DataBaseUtil.MIGRATION_1_2
+import com.sadxlab.notescompose.data.local.DataBaseUtil.MIGRATION_2_3
+import com.sadxlab.notescompose.data.local.DataBaseUtil.MIGRATION_3_4
 import com.sadxlab.notescompose.data.local.NoteDao
 import com.sadxlab.notescompose.data.local.NoteDataBase
 import com.sadxlab.notescompose.data.repository.NoteRepositoryImpl
@@ -28,7 +30,7 @@ object AppModule {
             app,
             NoteDataBase::class.java,
             "note_db"
-        ).addMigrations(MIGRATION_1_2)
+        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .build()
     }
 
